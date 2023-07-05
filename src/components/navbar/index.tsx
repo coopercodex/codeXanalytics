@@ -13,7 +13,7 @@ const Navbar = (props: Props) => {
 
   return (
     <FlexBetween mb="0.25rem" p="0.5rem 0rem" color={palette.grey[300]}>
-      <FlexBetween gap="0.75rem">
+      <FlexBetween gap="0.50rem">
         <BubbleChart sx={{ fontSize: "28px" }} />
         <Typography variant="h4" fontSize="16px">
           codeXanalytics
