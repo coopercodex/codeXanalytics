@@ -21,7 +21,7 @@ import BoxHeader from "../../components/BoxHeader"
 const Row1 = () => {
   const { palette } = useTheme()
   const { data } = useGetKpisQuery()
-  console.log("🚀 ~ file: Row1.tsx:18 ~ Row1 ~ data:", data)
+  // console.log("🚀 ~ file: Row1.tsx:18 ~ Row1 ~ data:", data)
 
   const revenueExpenses = useMemo(() => {
     return (
@@ -232,7 +232,10 @@ const Row1 = () => {
             </defs>
             <CartesianGrid vertical={false} stroke={palette.grey[800]} />
             <XAxis dataKey="name" axisLine={false} />
-            <YAxis yAxisId="left" orientation="left" />
+            <YAxis
+              yAxisId="left"
+              orientation="left"
+            />
             <Tooltip />
             <Bar yAxisId="left" dataKey="revenue" fill="url(#colorRevenue)" />
           </BarChart>
