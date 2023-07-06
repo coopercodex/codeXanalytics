@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react"
 import { Box, Typography } from "@mui/material"
 import FlexBetween from "../FlexBetween"
 import { useState } from "react"
-import { BubbleChart, DonutSmall } from "@mui/icons-material"
+import { BubbleChart } from "@mui/icons-material"
 import { Link } from "react-router-dom"
 
 type Props = {}
