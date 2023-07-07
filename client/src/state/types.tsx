@@ -36,13 +36,24 @@ export interface GetKpisResponse {
   updatedAt: string
 }
 
-export interface GetProductsResponse { 
+export interface GetProductsResponse {
   _id: string
   id: string
   __v: number
   price: number
   expense: number
   transactions: Array<string>
+  createdAt: string
+  updatedAt: string
+}
+
+export interface GetTransactionsResponse {
+  _id: string
+  id: string
+  __v: number
+  buyer: string
+  amount: number
+  productIds: Array<string>
   createdAt: string
   updatedAt: string
 }
