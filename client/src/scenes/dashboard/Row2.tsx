@@ -11,9 +11,12 @@ import {
   Pie,
   PieChart,
   ResponsiveContainer,
+  Scatter,
+  ScatterChart,
   Tooltip,
   XAxis,
   YAxis,
+  ZAxis,
 } from "recharts"
 import { useTheme } from "@emotion/react"
 import FlexBetween from "../../components/FlexBetween"
@@ -47,6 +50,19 @@ const Row2 = (props: Props) => {
       )
     )
   }, [operationalData])
+
+  const productExpenseData = useMemo(() => {
+    return (
+      productData &&
+      productData.map(({ _id, price, expense }) => {
+        return {
+          id: _id,
+          price: price,
+          expense: expense,
+        }
+      })
+    )
+  }, [productData])
   return (
     <>
       <DashboardBox gridArea="d">
@@ -109,7 +125,7 @@ const Row2 = (props: Props) => {
       </DashboardBox>
 
       <DashboardBox gridArea="e">
-        <BoxHeader title="Campaigns and Targets" sideText="+6" />
+        <BoxHeader title="Campaigns and Targets" sideText="+6%" />
         <FlexBetween mt="0.2rem" gap="1.5rem" pr="1rem">
           <PieChart
             width={110}
@@ -160,7 +176,47 @@ const Row2 = (props: Props) => {
           </Box>
         </FlexBetween>
       </DashboardBox>
-      <DashboardBox gridArea="f"></DashboardBox>
+      <DashboardBox gridArea="f">
+        <BoxHeader title="Product Prices vs Expenses" sideText="+4%" />
+        <ResponsiveContainer width="100%" height="100%">
+          <ScatterChart
+          data={productExpenseData}
+            margin={{
+              top: 20,
+              right: 25,
+              bottom: 40,
+              left: -10,
+            }}
+          >
+            <CartesianGrid storke={palette.grey[800]} />
+            <XAxis
+              type="number"
+              dataKey="price"
+              name="price"
+              axisLine={false}
+              style={{ fontSize: "10px" }}
+              tickFormatter={(v) => `$${v}`}
+            />
+            <YAxis
+              type="number"
+              dataKey="expense"
+              name="expense"
+              axisLine={false}
+              style={{ fontSize: "10px" }}
+              tickFormatter={(v) => `$${v}`}
+            />
+            <ZAxis type="number" range={[20]} />
+            <Tooltip
+              cursor={{ strokeDasharray: "3 3" }}
+              formatter={(v) => `$${v}`}
+            />
+            <Scatter
+              name="Product Expense Ratio"
+              fill={palette.tertiary[500]}
+            />
+          </ScatterChart>
+        </ResponsiveContainer>
+      </DashboardBox>
     </>
   )
 }
