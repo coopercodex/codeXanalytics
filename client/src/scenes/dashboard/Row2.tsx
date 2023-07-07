@@ -34,8 +34,6 @@ const Row2 = (props: Props) => {
   const { data: productData } = useGetProductsQuery()
   const { data: operationalData } = useGetKpisQuery()
 
-  console.log("🚀 ~ file: Row2.tsx:9 ~ Row2 ~ data:", { operationalData })
-
   const operationalExpenses = useMemo(() => {
     return (
       operationalData &&
