@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for fragrant-feather-3409 on 2023-07-07T19:44:20-06:00
+# fly.toml app configuration file generated for throbbing-brook-928 on 2023-07-08T00:13:52-06:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "fragrant-feather-3409"
+app = "throbbing-brook-928"
 primary_region = "den"
 
 [env]
