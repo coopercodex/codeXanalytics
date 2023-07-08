@@ -2,7 +2,7 @@ export const tokens = {
   grey: {
     100: "#f0f0f3",
     200: "#e1e2e7",
-    300: "#d1d3da",
+    300: "#FC9D0F",
     400: "#c2c5ce",
     500: "#b3b6c2",
     600: "#8f929b",
@@ -14,7 +14,7 @@ export const tokens = {
     // light green
     100: "#d0fcf4",
     200: "#a0f9e9",
-    300: "#71f5de",
+    300: "#029D06",
     400: "#41f2d3",
     500: "#12efc8",
     600: "#0ebfa0",
@@ -36,10 +36,11 @@ export const tokens = {
   },
   tertiary: {
     // purple
-    500: "#8884d8",
+    500: "#005DE5",
+    600: "#bc0202"
   },
   background: {
-    light: "#2d2d34",
+    light: "#040404",
     main: "#1f2026",
   },
 };

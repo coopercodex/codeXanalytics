@@ -123,7 +123,7 @@ const Row1 = () => {
             <Area
               type="monotone"
               dataKey="revenue"
-              stroke={palette.primary.main}
+              stroke={palette.primary[300]}
               dot={true}
               fillOpacity={1}
               fill="url(#colorRevenue)"
@@ -192,7 +192,8 @@ const Row1 = () => {
               yAxisId="right"
               type="monotone"
               dataKey="revenue"
-              stroke={palette.primary.main}
+              fill="url(#colorRevenue)"
+              stroke={palette.primary[300]}
             />
           </LineChart>
         </ResponsiveContainer>
