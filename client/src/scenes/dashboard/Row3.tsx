@@ -17,7 +17,7 @@ type Props = {}
 
 const Row3 = (props: Props) => {
   const { palette } = useTheme()
-  const pieColors = [palette.primary[300], palette.tertiary[500]]
+  const pieColors = [palette.primary[300], palette.tertiary[600]]
   const { data: kpiData } = useGetKpisQuery()
   const { data: transactionData } = useGetTransactionsQuery()
   const { data: productData } = useGetProductsQuery()
@@ -157,8 +157,8 @@ const Row3 = (props: Props) => {
         </Box>
       </DashboardBox>
       <DashboardBox gridArea="i">
-        <BoxHeader title="Expense Breakdown By Category" sideText="*8%" />
-        <FlexBetween mt="0.5rem" gap="0.5rem" p="0 1rem" textAlign="center">
+        <BoxHeader title="Expense Breakdown By Category" sideText="-8%" />
+        <FlexBetween mt="-0.55rem" gap="0.5rem" p="0 1rem" textAlign="center">
           {pieChartData?.map((data, index) => (
             <Box key={`${data[0].name}`}>
               <PieChart width={110} height={100}>
@@ -177,13 +177,13 @@ const Row3 = (props: Props) => {
                   ))}
                 </Pie>
               </PieChart>
-              <Typography variant="h5">{data[0].name}</Typography>
+              <Typography variant="h5" color={palette.grey[600]}>{data[0].name}</Typography>
             </Box>
           ))}
         </FlexBetween>
       </DashboardBox>
       <DashboardBox gridArea="j">
-        <BoxHeader title="Overall Summary of Data" sideText="*7.8%" />
+        <BoxHeader title="Overall Summary of Data" sideText="+7.8%" />
         <Box
           height="15px"
           margin="1.25rem 1rem 0.4rem 1rem"
