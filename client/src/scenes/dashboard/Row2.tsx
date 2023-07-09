@@ -3,6 +3,8 @@ import DashboardBox from "../../components/DashboardBox"
 import { useGetKpisQuery, useGetProductsQuery } from "../../state/api"
 import BoxHeader from "../../components/BoxHeader"
 import {
+  Bar,
+  BarChart,
   CartesianGrid,
   Cell,
   Legend,
@@ -10,6 +12,7 @@ import {
   LineChart,
   Pie,
   PieChart,
+  ReferenceLine,
   ResponsiveContainer,
   Scatter,
   ScatterChart,
@@ -56,11 +59,30 @@ const Row2 = (props: Props) => {
         return {
           id: _id,
           price: price,
-          expense: expense,
+          expense: -Math.abs(expense - price).toFixed(2),
         }
       })
     )
   }, [productData])
+
+  const datas = [
+    {
+      expense
+: 
+5,
+id
+: 
+"63bf7ac9f03239e002001600",price:43
+    },
+    {
+      name: "Page C",
+      uv: -2000,
+      pv: -9800,
+      amt: 2290
+    },
+   
+    
+  ];
   return (
     <>
       <DashboardBox gridArea="d">
@@ -153,10 +175,10 @@ const Row2 = (props: Props) => {
             </Pie>
           </PieChart>
           <Box ml="-0.7rem" flexBasis="25%" textAlign="center">
-            <Typography variant="h5" color={palette.primary[400]}>
+            <Typography variant="h5" color={palette.grey[300]}>
               Target Sales
             </Typography>
-            <Typography variant="h3" m="0.3rem 0" color={palette.primary[400]}>
+            <Typography variant="h3" m="0.3rem 0" color={palette.primary[300]}>
               72
             </Typography>
             <Typography variant="h6" m="0.3rem 0">
@@ -164,7 +186,7 @@ const Row2 = (props: Props) => {
             </Typography>
           </Box>
           <Box flexBasis="25%">
-            <Typography variant="h5" mt="0.4rem" color={palette.primary[400]}>
+            <Typography variant="h5" mt="0.4rem" color={palette.grey[300]}>
               Profit Margins
             </Typography>
             <Typography variant="h6">Profit Margins are up 23%</Typography>
@@ -175,9 +197,10 @@ const Row2 = (props: Props) => {
           </Box>
         </FlexBetween>
       </DashboardBox>
+
       <DashboardBox gridArea="f">
         <BoxHeader title="Product Prices vs Expenses" sideText="+4%" />
-        <ResponsiveContainer width="100%" height="100%">
+        {/* <ResponsiveContainer width="100%" height="100%">
           <ScatterChart
           data={productExpenseData}
             margin={{
@@ -214,6 +237,42 @@ const Row2 = (props: Props) => {
               fill={palette.tertiary[500]}
             />
           </ScatterChart>
+        </ResponsiveContainer> */}
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={productExpenseData?.slice(0,20)}
+            stackOffset="sign"
+            margin={{
+              top: 12,
+              right: 20,
+              left: -8,
+              bottom: 37
+            }}
+          >
+            <CartesianGrid strokeDasharray="1 0" stroke={palette.grey[700]} />
+            <XAxis
+              // type="number"
+              // dataKey="price"
+              name="price"
+              axisLine={false}
+              style={{ fontSize: "10px" }}
+              tickFormatter={(v) => `$${v}`}
+            />
+
+            <YAxis
+              // type="number"
+              // dataKey="expense"
+              name="expense"
+              axisLine={false}
+              style={{ fontSize: "10px" }}
+              tickFormatter={(v) => `$${v}`}
+            />
+            <Tooltip />
+            <Legend />
+            <ReferenceLine y={0} stroke={palette.grey[800]} />
+            <Bar dataKey="price" fill={palette.primary[300]}  />
+            <Bar dataKey="expense" fill={palette.tertiary[600]} />
+          </BarChart>
         </ResponsiveContainer>
       </DashboardBox>
     </>
