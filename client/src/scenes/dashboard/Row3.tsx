@@ -17,7 +17,7 @@ type Props = {}
 
 const Row3 = (props: Props) => {
   const { palette } = useTheme()
-  const pieColors = [palette.primary[500], palette.tertiary[500]]
+  const pieColors = [palette.primary[300], palette.tertiary[500]]
   const { data: kpiData } = useGetKpisQuery()
   const { data: transactionData } = useGetTransactionsQuery()
   const { data: productData } = useGetProductsQuery()
@@ -192,7 +192,7 @@ const Row3 = (props: Props) => {
         >
           <Box
             height="15px"
-            bgcolor={palette.primary[600]}
+            bgcolor={palette.primary[300]}
             borderRadius="1rem"
             width="40%"
           ></Box>

@@ -30,7 +30,7 @@ const pieData = [
 
 const Row2 = (props: Props) => {
   const { palette } = useTheme()
-  const pieColors = [palette.primary[500], palette.tertiary[500]]
+  const pieColors = [palette.primary[300], palette.tertiary[600]]
   const { data: productData } = useGetProductsQuery()
   const { data: operationalData } = useGetKpisQuery()
 
@@ -116,7 +116,8 @@ const Row2 = (props: Props) => {
               yAxisId="right"
               type="monotone"
               dataKey="Operational Expenses"
-              stroke={palette.primary.main}
+              fill="url(#colorRevenue)"
+              stroke={palette.primary[300]}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -152,10 +153,10 @@ const Row2 = (props: Props) => {
             </Pie>
           </PieChart>
           <Box ml="-0.7rem" flexBasis="25%" textAlign="center">
-            <Typography variant="h5" color={palette.primary[300]}>
+            <Typography variant="h5" color={palette.primary[400]}>
               Target Sales
             </Typography>
-            <Typography variant="h3" m="0.3rem 0" color={palette.primary[300]}>
+            <Typography variant="h3" m="0.3rem 0" color={palette.primary[400]}>
               72
             </Typography>
             <Typography variant="h6" m="0.3rem 0">
@@ -163,11 +164,11 @@ const Row2 = (props: Props) => {
             </Typography>
           </Box>
           <Box flexBasis="25%">
-            <Typography variant="h5" mt="0.4rem" color={palette.primary[300]}>
+            <Typography variant="h5" mt="0.4rem" color={palette.primary[400]}>
               Profit Margins
             </Typography>
             <Typography variant="h6">Profit Margins are up 23%</Typography>
-            <Typography variant="h5" color={palette.tertiary[500]}>
+            <Typography variant="h5" color={palette.tertiary[600]}>
               Losses in Revenue
             </Typography>
             <Typography variant="h6">Losses are down 15%</Typography>
