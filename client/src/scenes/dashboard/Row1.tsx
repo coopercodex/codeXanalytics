@@ -20,8 +20,8 @@ import BoxHeader from "../../components/BoxHeader"
 
 const Row1 = () => {
   const { palette } = useTheme()
+  // {console.log("🚀 ~ file: Row1.tsx:72 ~ Row1 ~ palette.primary[300:", typeof palette.primary[300])}
   const { data } = useGetKpisQuery()
-  // console.log("🚀 ~ file: Row1.tsx:18 ~ Row1 ~ data:", data)
 
   const revenueExpenses = useMemo(() => {
     return (
@@ -40,6 +40,7 @@ const Row1 = () => {
     return (
       data &&
       data[0].monthlyData.map(({ month, revenue, expenses }) => {
+        // console.log(revenue[9])
         return {
           name: month.substring(0, 3),
           revenue: revenue,
@@ -48,6 +49,13 @@ const Row1 = () => {
       })
     )
   }, [data])
+
+  const pctChange = revenue
+    ? (
+        ((revenue[10].revenue - revenue[11].revenue) / revenue[10].revenue) *
+        100
+      ).toFixed(2)
+    : null
 
   const revenueProfit = useMemo(() => {
     return (
@@ -61,13 +69,30 @@ const Row1 = () => {
       })
     )
   }, [data])
+
+  const getR = () => {
+    let rx = revenueProfit?.reduce((acc, n) => {
+      acc += n.revenue
+      return acc
+    }, 0)
+    return rx
+  }
+
+  const getP = () => {
+    let px = revenueProfit?.reduce((acc, n) => {
+      acc += Number(n.profit)
+      return acc
+    }, 0)
+    return px
+  }
+  const profitMargin = ((100 * getP()) / getR()).toFixed(2)
+
   return (
     <>
       <DashboardBox gridArea="a">
         <BoxHeader
           title="Revenue and Expenses"
           subtitle="Top line revenue, bottom line expenses"
-          sideText="+4%"
         />
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
@@ -144,7 +169,8 @@ const Row1 = () => {
         <BoxHeader
           title="Profit and Revenue"
           subtitle="Top line profit, bottom line revenue"
-          sideText="+5.5%"
+          sideText={`${profitMargin}%`}
+          color={palette.grey[300]}
         />
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
@@ -203,7 +229,8 @@ const Row1 = () => {
         <BoxHeader
           title="Revenue Month by Month"
           subtitle=" graph representing revenue month by month"
-          sideText="+1%"
+          sideText={`-${pctChange}%`}
+          color={palette.tertiary[600]}
         />
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -233,10 +260,7 @@ const Row1 = () => {
             </defs>
             <CartesianGrid vertical={false} stroke={palette.grey[800]} />
             <XAxis dataKey="name" axisLine={false} />
-            <YAxis
-              yAxisId="left"
-              orientation="left"
-            />
+            <YAxis yAxisId="left" orientation="left" />
             <Tooltip />
             <Bar yAxisId="left" dataKey="revenue" fill="url(#colorRevenue)" />
           </BarChart>
