@@ -1,14 +1,68 @@
-import { useTheme } from '@emotion/react'
-import React from 'react'
-import Row4 from './Row4'
+import { Box, useMediaQuery } from "@mui/material"
+import Row4 from "./Row4"
+import Row5 from "./Row5"
 
-type Props = {}
+const gridTemplateLargeScreens = `
+"a b c"
+"a b c"
+"d b c"
+"d b c"
+"e f c"
+"e f c"
+`
 
-const Stocks = (props: Props) => {
-  // const {palette} = useTheme()
+const gridTemplateSmallScreens = `
+"a"
+"a"
+"a"
+"a"
+"b"
+"b"
+"b"
+"b"
+
+"c"
+"c"
+"c"
+"d"
+"d"
+"d"
+"d"
+"e"
+"e"
+"e"
+"f"
+"f"
+"f"
+
+`
+
+const Stocks = () => {
+  const isAboveMediumScreens = useMediaQuery("(min-width: 1200px)")
+
   return (
-    <div><Row4 /></div>
+    <Box
+      width="100%"
+      height="100%"
+      display="grid"
+      gap="1.5rem"
+      sx={
+        isAboveMediumScreens
+          ? {
+              gridTemplateColumns: "repeat(3, minmax(370px, 1fr))",
+              gridTemplateRows: "repeat(6, minmax(60px, 1fr))",
+              gridTemplateAreas: gridTemplateLargeScreens,
+            }
+          : {
+              gridTemplateAreas: gridTemplateSmallScreens,
+              gridAutoColumns: "1fr",
+              gridAutoRows: "80px",
+            }
+      }
+    >
+      <Row4 />
+      <Row5 />
+    </Box>
   )
 }
-
 export default Stocks
