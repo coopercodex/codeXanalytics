@@ -157,7 +157,7 @@ const Row3 = (props: Props) => {
         </Box>
       </DashboardBox>
       <DashboardBox gridArea="i">
-        <BoxHeader title="Expense Breakdown By Category" sideText="-8%" />
+        <BoxHeader title="Expense Breakdown By Category" />
         <FlexBetween mt="-0.55rem" gap="0.5rem" p="0 1rem" textAlign="center">
           {pieChartData?.map((data, index) => (
             <Box key={`${data[0].name}`}>
@@ -183,7 +183,7 @@ const Row3 = (props: Props) => {
         </FlexBetween>
       </DashboardBox>
       <DashboardBox gridArea="j">
-        <BoxHeader title="Overall Summary of Data" sideText="+7.8%" />
+        <BoxHeader title="Overall Summary of Data" sideText="+2.5%" color={palette.primary[300]} />
         <Box
           height="15px"
           margin="1.25rem 1rem 0.4rem 1rem"

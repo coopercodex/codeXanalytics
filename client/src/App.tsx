@@ -4,6 +4,7 @@ import { themeSettings } from "./theme"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Navbar from "./components/navbar"
 import Dashboard from "./scenes/dashboard"
+import Stocks from "./scenes/stocks"
 
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
             <Navbar />
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/predictions" element={<div>Predics</div>} />
+              <Route path="/stocks" element={<Stocks />} />
             </Routes>
           </Box>
         </ThemeProvider>
