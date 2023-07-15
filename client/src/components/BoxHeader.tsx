@@ -1,13 +1,13 @@
 import React from "react"
 import FlexBetween from "./FlexBetween"
-import { useTheme } from "@emotion/react"
+import { useTheme } from "@mui/material"
 import { Box, Typography } from "@mui/material"
 
 type Props = {
   title: string
   subtitle?: string
-  sideText: string
-  color: string
+  sideText?: string
+  color?: string
   icon?: React.ReactNode
 }
 

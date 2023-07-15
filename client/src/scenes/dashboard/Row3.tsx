@@ -8,7 +8,7 @@ import {
   useGetTransactionsQuery,
 } from "../../state/api"
 import BoxHeader from "../../components/BoxHeader"
-import { useTheme } from "@emotion/react"
+import { useTheme } from "@mui/material"
 import { Box, Typography } from "@mui/material"
 import { Cell, Pie, PieChart } from "recharts"
 import FlexBetween from "../../components/FlexBetween"

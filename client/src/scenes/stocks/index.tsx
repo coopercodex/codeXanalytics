@@ -1,6 +1,7 @@
 import { Box, useMediaQuery } from "@mui/material"
 import Row4 from "./Row4"
 import Row5 from "./Row5"
+import React from "react"
 
 const gridTemplateLargeScreens = `
 "a b c"

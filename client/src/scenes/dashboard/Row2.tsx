@@ -21,7 +21,7 @@ import {
   YAxis,
   ZAxis,
 } from "recharts"
-import { useTheme } from "@emotion/react"
+import { useTheme } from "@mui/material"
 import FlexBetween from "../../components/FlexBetween"
 import { Box, Typography } from "@mui/material"
 
@@ -65,24 +65,7 @@ const Row2 = (props: Props) => {
     )
   }, [productData])
 
-  const datas = [
-    {
-      expense
-: 
-5,
-id
-: 
-"63bf7ac9f03239e002001600",price:43
-    },
-    {
-      name: "Page C",
-      uv: -2000,
-      pv: -9800,
-      amt: 2290
-    },
-   
-    
-  ];
+ 
   return (
     <>
       <DashboardBox gridArea="d">

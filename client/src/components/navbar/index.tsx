@@ -1,9 +1,10 @@
-import { useTheme } from "@emotion/react"
+import { useTheme } from "@mui/material"
 import { Box, Typography } from "@mui/material"
 import FlexBetween from "../FlexBetween"
 import { useState } from "react"
 import { BubbleChart } from "@mui/icons-material"
 import { Link } from "react-router-dom"
+import React from "react"
 
 type Props = {}
 
