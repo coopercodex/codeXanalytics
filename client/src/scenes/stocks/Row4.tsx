@@ -21,6 +21,12 @@ import {
   useGetTransactionsQuery,
 } from "../../state/api"
 import SearchBar from "../../components/SearchBar"
+import {
+  fetchHistoricalData,
+  fetchQuote,
+  fetchStockDetails,
+  searchSymbols,
+} from "../../state/stock.api"
 
 const transactionColumns = [
   {
@@ -54,97 +60,192 @@ const Row4 = (props: Props) => {
   const { palette: palette } = useTheme()
   const { data: transactionData } = useGetTransactionsQuery()
   // const pieColors = [palette.primary[300], palette.tertiary[600]]
-  const [stockData, setStockData] = useState([])
+  const [stockData, setStockData] = useState({})
   const [searchData, setSearchData] = useState([])
   const [stockName, setStockName] = useState("")
-  const [symbol, setSymbol] = useState("")
+  const [symbol, setSymbol] = useState("FB")
+  const [quote, setQuote] = useState({})
 
-    const handleChange = (event) => {
-      event.preventDefault()
-      setStockName(event.target.value)
-      fetch(
-        `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${event.target.value}&apikey=${import.meta.env.VITE_SECRET_KEY}`
-        )
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data["bestMatches"])
-          setSearchData(data["bestMatches"])
-          // setSymbol(data["bestMatches"]["1. symbol"][0])
-          // setTimeout(() =>  getStockData(), 1000);
-         
-        })
+  const [filter, setFilter] = useState("1W")
+  const [chartData, setChartData] = useState([])
+
+  // conveting timestamps
+  const dateToUnixTimestamp = (date) => {
+    return Math.floor(date.getTime() / 1000)
+  }
+
+  const unixTimestampToDate = (unixTimestamp) => {
+    const milliseconds = unixTimestamp * 1000
+    return new Date(milliseconds).toLocaleDateString()
+  }
+
+  const createDate = (date, days, weeks, months, years) => {
+    let newDate = new Date(date)
+    newDate.setDate(newDate.getDate() + days + 7 * weeks)
+    newDate.setMonth(newDate.getMonth() + months)
+    newDate.setFullYear(newDate.getFullYear() + years)
+    return newDate
+  }
+  const chartConfig = {
+    "1D": { days: 1, weeks: 0, months: 0, years: 0, resolution: "1" },
+    "1W": { days: 0, weeks: 1, months: 0, years: 0, resolution: "15" },
+    "1M": { days: 0, weeks: 0, months: 1, years: 0, resolution: "60" },
+    "1Y": { days: 0, weeks: 0, months: 0, years: 1, resolution: "D" },
+  }
+  const formatData = (data) => {
+    return data.c.map((stock, idx) => {
+      return {
+        value: stock.toFixed(2),
+        date: unixTimestampToDate(data.t[idx]),
       }
-      console.log(searchData)
+    })
+  }
 
-      console.log(symbol)
-    useEffect(() => {
-      
-      fetch(
-        `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${stockName}&outputsize=compact&apikey=${
-          import.meta.env.VITE_SECRET_KEY
-        }`)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("🚀 ~ file: Row4.tsx:82 ~ .then ~ data:", data)
-          
-          setStockData(data["Time Series (Daily)"])
-        })
-    
-    },[stockName])
+  const handleChange = async (event) => {
+    event.preventDefault()
+    setSymbol(event.target.value)
+    // fetch(
+    //   `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${event.target.value}&apikey=${import.meta.env.VITE_SECRET_KEY}`
+    //   )
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     console.log(data["bestMatches"])
+    //     setSearchData(data["bestMatches"])
+    // setSymbol(data["bestMatches"]["1. symbol"][0])
+    // setTimeout(() =>  getStockData(), 1000);
 
-    const searchDetails = useMemo(() => {
-      return (
-        searchData &&
-        Object.keys(searchData).map((stock) => {
-          return {
-            name: searchData[stock]["2. name"],
-            symbol: searchData[stock]["1. symbol"]
-          }
-        })
+    const searchResults = await searchSymbols(event.target.value)
+    const result = searchResults.result
+    setSearchData(result)
+    // })
+  }
+  console.log(searchData)
+
+  console.log(symbol)
+  useEffect(() => {
+    const updateStockDetails = async () => {
+      // fetch(
+      //   `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${event.target.value}&apikey=${import.meta.env.VITE_SECRET_KEY}`
+      //   )
+      //   .then((res) => res.json())
+      //   .then((data) => {
+      //     console.log(data["bestMatches"])
+      //     setSearchData(data["bestMatches"])
+      // setSymbol(data["bestMatches"]["1. symbol"][0])
+      // setTimeout(() =>  getStockData(), 1000);
+      const result = await fetchStockDetails(symbol)
+      setStockData(result)
+      console.log("🚀 ~ file: Row4.tsx:99 ~ //.then ~ setStockData:", stockData)
+    }
+
+    const updateStockOverview = async () => {
+      const result = await fetchQuote(symbol)
+      setQuote(result)
+    }
+
+    updateStockDetails()
+    updateStockOverview()
+  }, [symbol])
+  console.log(quote)
+
+  useEffect(() => {
+    const getDateRange = () => {
+      const { days, weeks, months, years } = chartConfig[filter]
+
+      const endDate = new Date()
+      const startDate = createDate(endDate, -days, -weeks, -months, -years)
+
+      const startTimeStampUnix = dateToUnixTimestamp(startDate)
+      const endTimeStampUnix = dateToUnixTimestamp(endDate)
+      return { startTimeStampUnix, endTimeStampUnix }
+    }
+    const updateChartData = async () => {
+      const { startTimeStampUnix, endTimeStampUnix } = getDateRange()
+      const resolution = chartConfig[filter].resolution
+      const result = await fetchHistoricalData(
+        symbol,
+        resolution,
+        startTimeStampUnix,
+        endTimeStampUnix
       )
-    }, [searchData])
-    console.log("🚀 ~ file: Row4.tsx:109 ~ searchDetails ~ searchDetails:", searchDetails)
-    
-    
+      setChartData(formatData(result))
+    }
+    updateChartData()
+  }, [symbol, filter])
 
-  const stockDetails = useMemo(() => {
-    return (
-      stockData &&
-      Object.keys(stockData).map((stock) => {
-        Number(stock)
-        const [year, month, day] = stock.split("-")
-        const date = new Date(stock)
-        date.setMonth(+month - 1)
-        let newestDay = date.toLocaleString("en-US", { month: "long" })
-        return {
-          date: `${newestDay} ${day}`,
-          price: stockData[stock]["1. open"],
-          high: stockData[stock]["2. high"],
-          low: stockData[stock]["3. low"],
-        }
-      })
-    )
-  }, [stockData])
+  // fetch(
+  // console.log("🚀 ~ file: Row4.tsx:115 ~ useEffect ~ stockName:", stockName)
+  //   `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${stockName}&outputsize=compact&apikey=${
+  //     import.meta.env.VITE_SECRET_KEY
+  //   }`)
+  //   .then((res) => res.json())
+  //   .then((data) => {
+  //     console.log("🚀 ~ file: Row4.tsx:82 ~ .then ~ data:", data)
 
-  const min = stockDetails?.reduce((a, b) => Math.min(a, b.low), Infinity)
-  const max = stockDetails?.reduce((a, b) => Math.max(a, b.high), -Infinity)
+  //     setStockData(data["Time Series (Daily)"])
+  //   })
+
+  // },[stockName])
+
+  // const searchDetails = useMemo(() => {
+  //   return (
+  //     searchData &&
+  //     Object.keys(searchData).map((stock) => {
+  //       return {
+  //         name: searchData[stock]["2. name"],
+  //         symbol: searchData[stock]["1. symbol"]
+  //       }
+  //     })
+  //   )
+  // }, [searchData])
+  // console.log("🚀 ~ file: Row4.tsx:109 ~ searchDetails ~ searchDetails:", searchDetails)
+
+  // const stockDetails = useMemo(() => {
+  //   return (
+  //     stockData &&
+  //     Object.keys(stockData).map((stock) => {
+  //       Number(stock)
+  //       const [year, month, day] = stock.split("-")
+  //       const date = new Date(stock)
+  //       date.setMonth(+month - 1)
+  //       let newestDay = date.toLocaleString("en-US", { month: "long" })
+  //       return {
+  //         date: `${newestDay} ${day}`,
+  //         price: stockData[stock]["1. open"],
+  //         high: stockData[stock]["2. high"],
+  //         low: stockData[stock]["3. low"],
+  //       }
+  //     })
+  //   )
+  // }, [stockData])
+
+  // const min = stockDetails?.reduce((a, b) => Math.min(a, b.low), Infinity)
+  // const max = stockDetails?.reduce((a, b) => Math.max(a, b.high), -Infinity)
 
   return (
     <>
       <DashboardBox gridArea="a">
-        <SearchBar  setStockName={setStockName}  searchDetails={searchDetails} handleChange={handleChange} setSymbol={setSymbol} />
+        <SearchBar
+          // searchDetails={searchDetails}
+          handleChange={handleChange}
+          setSymbol={setSymbol}
+          searchData={searchData}
+        />
         <BoxHeader
-          title={stockName}
-          subtitle="Top line revenue, bottom line expenses"
-          sideText=""
-          color="none"
+          title={stockData?.name}
+          subtitle={`${stockData?.exchange}`}
+          sideText={`${quote?.pc} ${stockData?.currency}`}
+          change={quote?.d}
+          color={`${quote?.d > "0" ? "green" : "red"}`}
+          changePercent={`(${quote?.dp})`}
+          // color="red"
         />
 
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             width={500}
             height={400}
-            data={stockDetails?.reverse()}
+            data={chartData}
             margin={{
               top: 15,
               right: 20,
@@ -187,13 +288,13 @@ const Row4 = (props: Props) => {
             <YAxis
               allowDataOverflow={true}
               axisLine={{ stroke: "0" }}
-              domain={[min, max]}
+              domain={["dataMin", "dataMax"]}
               tickLine={false}
               style={{ fontSize: "10px" }}
             />
             <Area
               type="monotone"
-              dataKey="price"
+              dataKey="value"
               stroke={palette.primary[300]}
               dot={false}
               fillOpacity={1}

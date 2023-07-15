@@ -11,7 +11,8 @@ const SearchBar = ({
   setStockName,
   handleChange,
   searchDetails,
-  setSymbol
+  setSymbol,
+  searchData
 }) => {
   const {palette: palette} = useTheme()
   return (
@@ -20,17 +21,18 @@ const SearchBar = ({
       style={{color: `${palette.grey[400]}`,}}
       disablePortal
       onChange={(event, newInputValue) => {
-        setStockName(newInputValue)
+        setSymbol(newInputValue)
         console.log("🚀 ~ file: SearchBar.tsx:23 ~ newInputValue:", newInputValue)
         
       }}
       id="combo-box-demo"
+      // isOptionEqualToValue={searchData.map((option, value) => value === undefined || option?.symbol?.toString() === (value?.symbol ?? value)?.toString())}
       
-      options={searchDetails?.map((n) => n.symbol)}
+      options={searchData?.map((n) => n.symbol)}
       renderInput={(params) => (
         <TextField {...params} label="" onChange={handleChange}  />
         )}
-        sx={{ width: 200, backgroundColor: palette.grey[500], margin: "auto",  }}
+        sx={{ width: 200, height: 30, backgroundColor: palette.grey[500], margin: "auto",  }}
         noOptionsText={"No companies with that name found..."}
       />
     </>
