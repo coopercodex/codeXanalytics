@@ -1,11 +1,12 @@
-import { Box, CssBaseline, ThemeProvider, createTheme } from "@mui/material"
+import { Box, CssBaseline, ThemeProvider } from "@mui/material"
+import { createTheme } from "@mui/material/styles"
 import { useMemo } from "react"
 import { themeSettings } from "./theme"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Navbar from "./components/navbar"
 import Dashboard from "./scenes/dashboard"
 import Stocks from "./scenes/stocks"
-
+import React from "react"
 
 function App() {
   const theme = useMemo(() => createTheme(themeSettings), [])

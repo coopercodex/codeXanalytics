@@ -1,17 +1,20 @@
 import React from "react"
 import FlexBetween from "./FlexBetween"
-import { useTheme } from "@emotion/react"
+import { useTheme } from "@mui/material"
 import { Box, Typography } from "@mui/material"
+import { red } from "@mui/material/colors"
 
 type Props = {
   title: string
   subtitle?: string
-  sideText: string
-  color: string
+  sideText?: string
+  color?: string
+  change?: number
+  changePercent?: string
   icon?: React.ReactNode
 }
 
-const BoxHeader = ({ icon, title, subtitle, sideText, color }: Props) => {
+const BoxHeader = ({ icon, title, subtitle, sideText, color, change, changePercent }: Props) => {
   const { palette } = useTheme()
 
   return (
@@ -26,8 +29,9 @@ const BoxHeader = ({ icon, title, subtitle, sideText, color }: Props) => {
         </Box>
       </FlexBetween>
       <Typography variant="h5" fontWeight="700" color={color}>
-        {sideText}
+        {sideText} {change} {changePercent}%
       </Typography>
+      
     </FlexBetween>
   )
 }

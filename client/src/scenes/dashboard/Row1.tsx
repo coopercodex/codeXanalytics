@@ -15,7 +15,7 @@ import {
   BarChart,
   Bar,
 } from "recharts"
-import { useTheme } from "@emotion/react"
+import { useTheme } from "@mui/material"
 import BoxHeader from "../../components/BoxHeader"
 
 const Row1 = () => {
@@ -70,20 +70,20 @@ const Row1 = () => {
     )
   }, [data])
 
-  const getR = () => {
-    let rx = revenueProfit?.reduce((acc, n) => {
+  const getR = (): number => {
+    let rx = revenueProfit?.reduce<number>((acc, n) => {
       acc += n.revenue
       return acc
     }, 0)
-    return rx
+    return rx!
   }
 
-  const getP = () => {
-    let px = revenueProfit?.reduce((acc, n) => {
+  const getP = (): number => {
+    let px = revenueProfit?.reduce<number>((acc, n) => {
       acc += Number(n.profit)
-      return acc
+        return acc
     }, 0)
-    return px
+    return px!
   }
   const profitMargin = ((100 * getP()) / getR()).toFixed(2)
 

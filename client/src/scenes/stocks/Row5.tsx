@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
-import { useTheme } from "@emotion/react"
+import { useTheme } from "@mui/material"
 import { Box } from "@mui/material"
 
 type Props = {}
