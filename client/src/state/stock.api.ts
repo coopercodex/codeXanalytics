@@ -1,7 +1,7 @@
 const baseUrl = "https://finnhub.io/api/v1"
 
 export const searchSymbols = async (query:string) => {
-  const url = `${baseUrl}/search?q=${query}&token=cipeob1r01qm3lighsd0cipeob1r01qm3lighsdg`  
+  const url = `${baseUrl}/search?q=${query}&token=${import.meta.env.VITE_SECRET_KEY}`  
   const res = await fetch(url)
   if (!res.ok) {
     const message = `An error : ${res.status}`
@@ -12,7 +12,7 @@ export const searchSymbols = async (query:string) => {
 }
 
 export const fetchStockDetails = async (stockSymbol:string) => {
-    const url = `${baseUrl}/stock/profile2?symbol=${stockSymbol}&token=cipeob1r01qm3lighsd0cipeob1r01qm3lighsdg` 
+    const url = `${baseUrl}/stock/profile2?symbol=${stockSymbol}&token=${import.meta.env.VITE_SECRET_KEY}` 
     const res = await fetch(url)
     if (!res.ok) {
       const message = `An error : ${res.status}`
@@ -23,7 +23,7 @@ export const fetchStockDetails = async (stockSymbol:string) => {
 }
 
 export const fetchQuote = async (stockSymbol:string) => {
-  const url = `${baseUrl}/quote?symbol=${stockSymbol}&token=cipeob1r01qm3lighsd0cipeob1r01qm3lighsdg` 
+  const url = `${baseUrl}/quote?symbol=${stockSymbol}&token=${import.meta.env.VITE_SECRET_KEY}` 
   const res = await fetch(url)
   if (!res.ok) {
     const message = `An error : ${res.status}`
@@ -34,7 +34,7 @@ export const fetchQuote = async (stockSymbol:string) => {
 }
 
 export const fetchHistoricalData = async (stockSymbol: string,resolution: string, from: number, to: number) => {
-  const url = `${baseUrl}/stock/candle?symbol=${stockSymbol}&resolution=${resolution}&from=${from}&to=${to}&token=cipeob1r01qm3lighsd0cipeob1r01qm3lighsdg` 
+  const url = `${baseUrl}/stock/candle?symbol=${stockSymbol}&resolution=${resolution}&from=${from}&to=${to}&token=${import.meta.env.VITE_SECRET_KEY}` 
   const res = await fetch(url)
   if (!res.ok) {
     const message = `An error : ${res.status}`

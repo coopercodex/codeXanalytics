@@ -16,8 +16,6 @@ import { Box, Typography } from "@mui/material"
 import { DataGrid, GridCellParams } from "@mui/x-data-grid"
 
 import {
-  // useGetKpisQuery,
-  // useGetProductsQuery,
   useGetTransactionsQuery,
 } from "../../state/api"
 import SearchBar from "../../components/SearchBar"
@@ -65,11 +63,9 @@ const Row4 = (props: Props) => {
   const [stockName, setStockName] = useState("")
   const [symbol, setSymbol] = useState("FB")
   const [quote, setQuote] = useState({})
-
   const [filter, setFilter] = useState("1W")
   const [chartData, setChartData] = useState([])
 
-  // conveting timestamps
   const dateToUnixTimestamp = (date) => {
     return Math.floor(date.getTime() / 1000)
   }
@@ -104,45 +100,21 @@ const Row4 = (props: Props) => {
   const handleChange = async (event) => {
     event.preventDefault()
     setSymbol(event.target.value)
-    // fetch(
-    //   `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${event.target.value}&apikey=${import.meta.env.VITE_SECRET_KEY}`
-    //   )
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     console.log(data["bestMatches"])
-    //     setSearchData(data["bestMatches"])
-    // setSymbol(data["bestMatches"]["1. symbol"][0])
-    // setTimeout(() =>  getStockData(), 1000);
-
     const searchResults = await searchSymbols(event.target.value)
     const result = searchResults.result
     setSearchData(result)
-    // })
   }
-  console.log(searchData)
 
-  console.log(symbol)
   useEffect(() => {
     const updateStockDetails = async () => {
-      // fetch(
-      //   `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${event.target.value}&apikey=${import.meta.env.VITE_SECRET_KEY}`
-      //   )
-      //   .then((res) => res.json())
-      //   .then((data) => {
-      //     console.log(data["bestMatches"])
-      //     setSearchData(data["bestMatches"])
-      // setSymbol(data["bestMatches"]["1. symbol"][0])
-      // setTimeout(() =>  getStockData(), 1000);
       const result = await fetchStockDetails(symbol)
       setStockData(result)
       console.log("🚀 ~ file: Row4.tsx:99 ~ //.then ~ setStockData:", stockData)
     }
-
     const updateStockOverview = async () => {
       const result = await fetchQuote(symbol)
       setQuote(result)
     }
-
     updateStockDetails()
     updateStockOverview()
   }, [symbol])
@@ -173,60 +145,10 @@ const Row4 = (props: Props) => {
     updateChartData()
   }, [symbol, filter])
 
-  // fetch(
-  // console.log("🚀 ~ file: Row4.tsx:115 ~ useEffect ~ stockName:", stockName)
-  //   `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${stockName}&outputsize=compact&apikey=${
-  //     import.meta.env.VITE_SECRET_KEY
-  //   }`)
-  //   .then((res) => res.json())
-  //   .then((data) => {
-  //     console.log("🚀 ~ file: Row4.tsx:82 ~ .then ~ data:", data)
-
-  //     setStockData(data["Time Series (Daily)"])
-  //   })
-
-  // },[stockName])
-
-  // const searchDetails = useMemo(() => {
-  //   return (
-  //     searchData &&
-  //     Object.keys(searchData).map((stock) => {
-  //       return {
-  //         name: searchData[stock]["2. name"],
-  //         symbol: searchData[stock]["1. symbol"]
-  //       }
-  //     })
-  //   )
-  // }, [searchData])
-  // console.log("🚀 ~ file: Row4.tsx:109 ~ searchDetails ~ searchDetails:", searchDetails)
-
-  // const stockDetails = useMemo(() => {
-  //   return (
-  //     stockData &&
-  //     Object.keys(stockData).map((stock) => {
-  //       Number(stock)
-  //       const [year, month, day] = stock.split("-")
-  //       const date = new Date(stock)
-  //       date.setMonth(+month - 1)
-  //       let newestDay = date.toLocaleString("en-US", { month: "long" })
-  //       return {
-  //         date: `${newestDay} ${day}`,
-  //         price: stockData[stock]["1. open"],
-  //         high: stockData[stock]["2. high"],
-  //         low: stockData[stock]["3. low"],
-  //       }
-  //     })
-  //   )
-  // }, [stockData])
-
-  // const min = stockDetails?.reduce((a, b) => Math.min(a, b.low), Infinity)
-  // const max = stockDetails?.reduce((a, b) => Math.max(a, b.high), -Infinity)
-
   return (
     <>
       <DashboardBox gridArea="a">
         <SearchBar
-          // searchDetails={searchDetails}
           handleChange={handleChange}
           setSymbol={setSymbol}
           searchData={searchData}
@@ -236,9 +158,8 @@ const Row4 = (props: Props) => {
           subtitle={`${stockData?.exchange}`}
           sideText={`${quote?.pc} ${stockData?.currency}`}
           change={quote?.d}
-          color={`${quote?.d > "0" ? "green" : "red"}`}
+          color={`${quote?.d > "0" ? palette.primary[300] : palette.tertiary[600]}`}
           changePercent={`(${quote?.dp})`}
-          // color="red"
         />
 
         <ResponsiveContainer width="100%" height="100%">
@@ -247,10 +168,10 @@ const Row4 = (props: Props) => {
             height={400}
             data={chartData}
             margin={{
-              top: 15,
+              top: 14,
               right: 20,
               left: -5,
-              bottom: 50,
+              bottom: 75,
             }}
           >
             <CartesianGrid strokeDasharray="1 15" />

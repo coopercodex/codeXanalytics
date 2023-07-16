@@ -10,7 +10,7 @@ type Props = {
   sideText?: string
   color?: string
   change?: number
-  changePercent?: number
+  changePercent?: string
   icon?: React.ReactNode
 }
 
