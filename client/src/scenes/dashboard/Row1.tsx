@@ -20,7 +20,6 @@ import BoxHeader from "../../components/BoxHeader"
 
 const Row1 = () => {
   const { palette } = useTheme()
-  // {console.log("🚀 ~ file: Row1.tsx:72 ~ Row1 ~ palette.primary[300:", typeof palette.primary[300])}
   const { data } = useGetKpisQuery()
 
   const revenueExpenses = useMemo(() => {

@@ -8,8 +8,8 @@ const gridTemplateLargeScreens = `
 "a b c"
 "d b c"
 "d b c"
-"e f c"
-"e f c"
+"e e c"
+"e e c"
 `
 
 const gridTemplateSmallScreens = `
@@ -32,10 +32,6 @@ const gridTemplateSmallScreens = `
 "e"
 "e"
 "e"
-"f"
-"f"
-"f"
-
 `
 
 const Stocks = () => {
