@@ -4,8 +4,12 @@ import BoxHeader from "../../components/BoxHeader"
 import {
   Area,
   AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
+  Legend,
   Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -13,42 +17,70 @@ import {
 } from "recharts"
 import { useTheme } from "@mui/material"
 import { Box, Typography } from "@mui/material"
-import { DataGrid, GridCellParams } from "@mui/x-data-grid"
+import { DataGrid, GridCellParams, GridColDef } from "@mui/x-data-grid"
 
-import {
-  useGetTransactionsQuery,
-} from "../../state/api"
+import { useGetTransactionsQuery } from "../../state/api"
 import SearchBar from "../../components/SearchBar"
 import {
+  fetchBuySellData,
   fetchHistoricalData,
   fetchQuote,
   fetchStockDetails,
+  fetchStockList,
   searchSymbols,
 } from "../../state/stock.api"
+import Draggable from "react-draggable"
+import { mockData } from "../../Mockdata"
+import clsx from "clsx"
 
-const transactionColumns = [
+const transactionColumns: GridColDef[] = [
   {
-    field: "_id",
-    headerName: "id",
-    flex: 1,
+    field: "ticker",
+    headerName: "Ticker",
+    cellClassName: "super-app-theme--cell",
+    flex: 0.50,
   },
   {
-    field: "buyer",
-    headerName: "Buyer",
+    field: "price",
+    headerName: "Value",
     flex: 0.65,
-  },
-  {
-    field: "amount",
-    headerName: "Amount",
-    flex: 0.35,
     renderCell: (params: GridCellParams) => `$${params.value}`,
   },
   {
-    field: "productIds",
-    headerName: "Count",
-    flex: 0.37,
-    renderCell: (params: GridCellParams) =>
-      `${(params.value as Array<string>).length}`,
+    field: "volume",
+    headerName: "Volume",
+    flex: 0.45,
+  },
+  {
+    field: "change_amount",
+    headerName: "Change",
+    flex: 0.47,
+    width: 140,
+    cellClassName: (params: GridCellParams<any, string>) => {
+      if (params.value == null) {
+        return ""
+      }
+
+      return clsx("super-app", {
+        negative: params.value < "0",
+        positive: params.value > "0",
+      })
+    },
+  },
+  {
+    field: "change_percentage",
+    headerName: "Change %",
+    flex: 0.47,
+    cellClassName: (params: GridCellParams<any, string>) => {
+      if (params.value == null) {
+        return ""
+      }
+
+      return clsx("super-app", {
+        negative: params.value < "0",
+        positive: params.value > "0",
+      })
+    },
   },
 ]
 
@@ -60,12 +92,14 @@ const Row4 = (props: Props) => {
   // const pieColors = [palette.primary[300], palette.tertiary[600]]
   const [stockData, setStockData] = useState({})
   const [searchData, setSearchData] = useState([])
-  const [stockName, setStockName] = useState("")
+  const [stockList, setStockList] = useState(mockData["most_actively_traded"])
   const [symbol, setSymbol] = useState("FB")
   const [quote, setQuote] = useState({})
   const [filter, setFilter] = useState("1W")
   const [chartData, setChartData] = useState([])
+  const [buySellData, setBuySellData] = useState([])
 
+  // SPLIT IN DIFF FILE  //
   const dateToUnixTimestamp = (date) => {
     return Math.floor(date.getTime() / 1000)
   }
@@ -89,10 +123,10 @@ const Row4 = (props: Props) => {
     "1Y": { days: 0, weeks: 0, months: 0, years: 1, resolution: "D" },
   }
   const formatData = (data) => {
-    return data.c.map((stock, idx) => {
+    return data?.c.map((stock, idx) => {
       return {
-        value: stock.toFixed(2),
-        date: unixTimestampToDate(data.t[idx]),
+        value: stock?.toFixed(2),
+        date: unixTimestampToDate(data?.t[idx]),
       }
     })
   }
@@ -109,16 +143,24 @@ const Row4 = (props: Props) => {
     const updateStockDetails = async () => {
       const result = await fetchStockDetails(symbol)
       setStockData(result)
-      console.log("🚀 ~ file: Row4.tsx:99 ~ //.then ~ setStockData:", stockData)
     }
     const updateStockOverview = async () => {
       const result = await fetchQuote(symbol)
       setQuote(result)
     }
+    const updateBuySellData = async () => {
+      const result = await fetchBuySellData(symbol)
+      setBuySellData(result.reverse())
+    }
+    const updateStockList = async () => {
+      // const result = await fetchStockList()
+      // setStockList(mockData)
+    }
     updateStockDetails()
     updateStockOverview()
+    updateBuySellData()
+    updateStockList()
   }, [symbol])
-  console.log(quote)
 
   useEffect(() => {
     const getDateRange = () => {
@@ -158,11 +200,13 @@ const Row4 = (props: Props) => {
           subtitle={`${stockData?.exchange}`}
           sideText={`${quote?.pc} ${stockData?.currency}`}
           change={quote?.d}
-          color={`${quote?.d > "0" ? palette.primary[300] : palette.tertiary[600]}`}
-          changePercent={`(${quote?.dp})`}
+          color={`${
+            quote?.d > "0" ? palette.primary[300] : palette.tertiary[600]
+          }`}
+          changePercent={`(${quote?.dp})%`}
         />
 
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%">
           <AreaChart
             width={500}
             height={400}
@@ -170,8 +214,8 @@ const Row4 = (props: Props) => {
             margin={{
               top: 14,
               right: 20,
-              left: -5,
-              bottom: 75,
+              left: -7,
+              bottom: 76,
             }}
           >
             <CartesianGrid strokeDasharray="1 15" />
@@ -233,46 +277,171 @@ const Row4 = (props: Props) => {
           </AreaChart>
         </ResponsiveContainer>
       </DashboardBox>
-      <Box bgcolor="grey" gridArea="b">
-        b
-      </Box>
-      {/* <Box bgcolor="grey"gridArea="c"> */}
-
-      <DashboardBox gridArea="c">
-        <BoxHeader
-          title="Recent Orders"
-          // sideText={`${transactionData?.length} products`}
-        />
-        <Box
-          mt="1rem"
-          p="0 0 0.5rem"
-          height="90%"
-          sx={{
-            "& .MuiDataGrid-root": {
-              color: palette.grey[300],
-              border: "none",
-            },
-            "& .MuiDataGrid-cell": {
-              borderBottom: `1px solid ${palette.grey[800]}!important`,
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              borderBottom: `1px solid ${palette.grey[800]}!important`,
-            },
-            "& .MuiDataGrid-columnSeparator": {
-              visibility: "hidden",
-            },
-          }}
-        >
-          <DataGrid
-            columnHeaderHeight={25}
-            rowHeight={35}
-            hideFooter={true}
-            rows={transactionData || []}
-            columns={transactionColumns}
+      <Draggable>
+        <DashboardBox gridArea="b">
+          <BoxHeader
+            title="Operational Vs Non-Operational Cost"
+            subtitle="Top line profit, bottom line revenue"
           />
-        </Box>
-      </DashboardBox>
-      {/* </Box> */}
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              // width={500}
+              // height={400}
+              // data={operationalExpenses}
+              margin={{
+                top: 20,
+                right: 0,
+                left: -10,
+                bottom: 55,
+              }}
+            >
+              <CartesianGrid vertical={false} stroke={palette.grey[800]} />
+              <XAxis
+                dataKey="name"
+                tickLine={false}
+                style={{ fontSize: "10px" }}
+              />
+              <YAxis
+                yAxisId="left"
+                orientation="left"
+                axisLine={false}
+                tickLine={false}
+                style={{ fontSize: "10px" }}
+              />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                axisLine={false}
+                tickLine={false}
+                style={{ fontSize: "10px" }}
+              />
+              <Tooltip />
+              <Legend height={20} wrapperStyle={{ margin: "0 0 10px 0" }} />
+              <Line
+                yAxisId="left"
+                activeDot={{ r: 6 }}
+                type="monotone"
+                dataKey="Non Operational Expenses"
+                stroke={palette.tertiary[500]}
+                fillOpacity={1}
+                fill="url(#colorRevenue)"
+              />
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="Operational Expenses"
+                fill="url(#colorRevenue)"
+                stroke={palette.primary[300]}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </DashboardBox>
+      </Draggable>
+      <Draggable>
+        <DashboardBox gridArea="c">
+          <BoxHeader
+            title="Recent Orders"
+            // sideText={`${transactionData?.length} products`}
+          />
+          {/* palette.primary[300] : palette.tertiary[600] */}
+          <Box
+            mt="1.5rem"
+            p="0 0 0.5rem"
+            height="95%"
+            sx={{
+              "& .super-app-theme--cell": {
+                color: palette.grey[300],
+                fontWeight: "600",
+              },
+              "& .super-app.negative": {
+                color: palette.tertiary[600],
+                fontWeight: "600",
+              },
+              "& .super-app.positive": {
+                color: palette.primary[300],
+                fontWeight: "600",
+              },
+              "& .MuiDataGrid-root": {
+                color: palette.grey[300],
+                border: "none",
+                fontWeight: "600",
+              },
+              "& .MuiDataGrid-columnHeaderTitle" : {
+                color: palette.grey[500],
+                border: "none",
+                fontWeight: "600",
+              },
+              "& .MuiDataGrid-cell": {
+                borderBottom: `1px solid ${palette.grey[800]}!important`,
+              },
+              "& .MuiDataGrid-columnHeaders": {
+                borderBottom: `1px solid ${palette.grey[800]}!important`,
+              },
+              "& .MuiDataGrid-columnSeparator": {
+                borderRight: `1px solid ${palette.grey[300]}!important`,
+              },
+            }}
+          >
+            <DataGrid
+              columnHeaderHeight={25}
+              rowHeight={55}
+              hideFooter={true}
+              rows={stockList || []}
+              columns={transactionColumns}
+              getRowId={(row) => row.volume}
+              
+            />
+          </Box>
+        </DashboardBox>
+      </Draggable>
+      // SPlIT HERE TO DIFF COMP //
+      <Draggable>
+        <DashboardBox bgcolor="grey" gridArea="d">
+          <BoxHeader
+            title={`${stockData?.name} Recommendation Trends`}
+            subtitle="Suggested investment strategies"
+            sideText=""
+            color={palette.tertiary[600]}
+          />
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              width={500}
+              height={300}
+              data={buySellData}
+              margin={{
+                top: 20,
+                right: 15,
+                left: -5,
+                bottom: 55,
+              }}
+            >
+              <defs>
+                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor={palette.primary[300]}
+                    stopOpacity={0.5}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor={palette.primary[300]}
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} stroke={palette.grey[800]} />
+              <XAxis dataKey="period" axisLine={false} />
+              <YAxis />
+              <Legend height={20} wrapperStyle={{ margin: "0 0 0px 0" }} />
+              <Tooltip />
+              {/* <Bar yAxisId="left" dataKey="sell" fill="url(#colorRevenue)" /> */}
+              <Bar dataKey="sell" stackId="a" fill={palette.tertiary[600]} />
+              <Bar dataKey="hold" stackId="a" fill={palette.grey[300]} />
+              <Bar dataKey="buy" stackId="a" fill={palette.primary[300]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </DashboardBox>
+      </Draggable>
     </>
   )
 }

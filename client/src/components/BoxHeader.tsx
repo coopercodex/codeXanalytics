@@ -18,7 +18,7 @@ const BoxHeader = ({ icon, title, subtitle, sideText, color, change, changePerce
   const { palette } = useTheme()
 
   return (
-    <FlexBetween color={palette.grey[300]} margin="1.5rem 1rem 0 1rem">
+    <FlexBetween color={palette.grey[300]} margin=".25rem 1rem 0 1rem">
       <FlexBetween>
         {icon}
         <Box width="100%">
@@ -29,7 +29,7 @@ const BoxHeader = ({ icon, title, subtitle, sideText, color, change, changePerce
         </Box>
       </FlexBetween>
       <Typography variant="h5" fontWeight="700" color={color}>
-        {sideText} {change} {changePercent}%
+        {sideText} {change} {changePercent}
       </Typography>
       
     </FlexBetween>

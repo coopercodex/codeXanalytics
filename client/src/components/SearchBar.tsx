@@ -18,21 +18,38 @@ const SearchBar = ({
   return (
     <>
       <Autocomplete
-      style={{color: `${palette.grey[400]}`,}}
+       sx={{
+        "& .MuiAutocomplete-inputRoot": {
+          color: "grey",
+          "&.Mui-focused .MuiInputLabel-outlined": {
+            color: "grey"
+          },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "gray"
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "gray"
+          },
+          "&.Mui-focused .MuiButtonBase-root": {
+            color: "grey"
+          },
+          ".MuiSvgIcon-root": {
+            color: "grey"
+          }
+        },
+        width: 200,
+        margin: "auto"
+      }}
       disablePortal
       onChange={(event, newInputValue) => {
         setSymbol(newInputValue)
         console.log("🚀 ~ file: SearchBar.tsx:23 ~ newInputValue:", newInputValue)
-        
       }}
       id="combo-box-demo"
-      // isOptionEqualToValue={searchData.map((option, value) => value === undefined || option?.symbol?.toString() === (value?.symbol ?? value)?.toString())}
-      
       options={searchData?.map((n) => n.symbol)}
       renderInput={(params) => (
         <TextField {...params} label="" onChange={handleChange}  />
         )}
-        sx={{ width: 200, height: 30, backgroundColor: palette.grey[500], margin: "auto",  }}
         noOptionsText={"No companies with that name found..."}
       />
     </>

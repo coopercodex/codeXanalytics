@@ -43,3 +43,25 @@ export const fetchHistoricalData = async (stockSymbol: string,resolution: string
   }
   return await res.json() 
 }
+
+export const fetchBuySellData = async (stockSymbol: string) => {
+  const url = `${baseUrl}/stock/recommendation?symbol=${stockSymbol}&token=${import.meta.env.VITE_SECRET_KEY}` 
+  const res = await fetch(url)
+  if (!res.ok) {
+    const message = `An error : ${res.status}`
+    throw new Error(message);
+    
+  }
+  return await res.json() 
+}
+
+export const fetchStockList = async () => {
+  const url =  `https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=${import.meta.env.VITE_STOCKLIST_KEY}`
+  const res = await fetch(url)
+  if (!res.ok) {
+    const message = `An error : ${res.status}`
+    throw new Error(message);
+    
+  }
+  return await res.json() 
+}
