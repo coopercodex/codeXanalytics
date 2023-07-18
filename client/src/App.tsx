@@ -7,6 +7,7 @@ import Navbar from "./components/navbar"
 import Dashboard from "./scenes/dashboard"
 import Stocks from "./scenes/stocks"
 import React from "react"
+import { Rnd } from "react-rnd"
 
 function App() {
   const theme = useMemo(() => createTheme(themeSettings), [])
