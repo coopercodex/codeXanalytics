@@ -14,7 +14,7 @@ import {
 } from "recharts"
 import { useTheme } from "@mui/material"
 import { Box } from "@mui/material"
-import Draggable from "react-draggable"
+
 
 type Props = {}
 
@@ -80,19 +80,17 @@ const Row5 = (props: Props) => {
               />
             </LineChart> */}
           {/* </ResponsiveContainer>
-        </DashboardBox>
-      </Draggable> */} 
+        </DashboardBox> */}
 
-      <Draggable>
+   
         <Box bgcolor="grey" gridArea="e">
           e
         </Box>
-      </Draggable>
-      <Draggable>
+   
         <Box bgcolor="grey" gridArea="f">
           f
         </Box>
-      </Draggable>
+     
     </>
   )
 }
