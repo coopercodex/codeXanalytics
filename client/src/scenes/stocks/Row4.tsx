@@ -19,7 +19,6 @@ import { useTheme } from "@mui/material"
 import { Box, Typography } from "@mui/material"
 import { DataGrid, GridCellParams, GridColDef } from "@mui/x-data-grid"
 
-import { useGetTransactionsQuery } from "../../state/api"
 import SearchBar from "../../components/SearchBar"
 import {
   fetchBuySellData,
@@ -30,10 +29,15 @@ import {
   fetchStockList,
   searchSymbols,
 } from "../../state/stock.api"
-import Draggable from "react-draggable"
 import { mockData } from "../../Mockdata"
 import clsx from "clsx"
-
+import GridLayout from "react-grid-layout"
+import "react-grid-layout/css/styles.css"
+import "react-resizable/css/styles.css"
+import { Responsive, WidthProvider } from "react-grid-layout"
+import { layouts } from "../../state/layoutsAndGrid"
+import { chartConfig, createDate, dateToUnixTimestamp, unixTimestampToDate } from "../../time"
+const ResponsiveGridLayout = WidthProvider(Responsive)
 
 const mostActiveColumns: GridColDef[] = [
   {
@@ -125,44 +129,30 @@ const NewsColumns: GridColDef[] = [
 ]
 
 type Props = {}
+interface StockData {
+  name?: string
+  exchange?:string;
+  currency?: string;
+}
+interface Quotes {
+d?: number;
+c?: number;
+dp?: number;
+pc?: number;
+}
 
 const Row4 = (props: Props) => {
   const { palette: palette } = useTheme()
-  const { data: transactionData } = useGetTransactionsQuery()
-  // const pieColors = [palette.primary[300], palette.tertiary[600]]
-  const [stockData, setStockData] = useState({})
+  const [stockData, setStockData] = useState<StockData>({})
   const [searchData, setSearchData] = useState([])
   const [stockList, setStockList] = useState(mockData["most_actively_traded"])
   const [symbol, setSymbol] = useState("META")
-  const [quote, setQuote] = useState({})
-  const [filter, setFilter] = useState("1W")
+  const [quote, setQuote] = useState<Quotes>({})
+  const [filter] = useState("1W")
   const [chartData, setChartData] = useState([])
   const [buySellData, setBuySellData] = useState([])
   const [news, setNews] = useState([])
 
-  // SPLIT IN DIFF FILE  //
-  const dateToUnixTimestamp = (date) => {
-    return Math.floor(date.getTime() / 1000)
-  }
-
-  const unixTimestampToDate = (unixTimestamp) => {
-    const milliseconds = unixTimestamp * 1000
-    return new Date(milliseconds).toLocaleDateString()
-  }
-
-  const createDate = (date, days, weeks, months, years) => {
-    let newDate = new Date(date)
-    newDate.setDate(newDate.getDate() + days + 7 * weeks)
-    newDate.setMonth(newDate.getMonth() + months)
-    newDate.setFullYear(newDate.getFullYear() + years)
-    return newDate
-  }
-  const chartConfig = {
-    "1D": { days: 1, weeks: 0, months: 0, years: 0, resolution: "1" },
-    "1W": { days: 0, weeks: 1, months: 0, years: 0, resolution: "15" },
-    "1M": { days: 0, weeks: 0, months: 1, years: 0, resolution: "60" },
-    "1Y": { days: 0, weeks: 0, months: 0, years: 1, resolution: "D" },
-  }
   const formatData = (data) => {
     return data.c.map((stock, idx) => {
       return {
@@ -173,6 +163,18 @@ const Row4 = (props: Props) => {
       }
     })
   }
+  const formatBuySellData = (data) => {
+    return data.map((stock, idx) => {
+      return {
+        period: stock.period.split("-").reverse().join("/"),
+        symbol: stock.symbol,
+        sell: stock.sell,
+        hold: stock.hold,
+        buy: stock.buy,
+      }
+    })
+  }
+  
 
   const handleChange = async (event) => {
     event.preventDefault()
@@ -193,7 +195,7 @@ const Row4 = (props: Props) => {
     }
     const updateBuySellData = async () => {
       const result = await fetchBuySellData(symbol)
-      setBuySellData(result.reverse())
+      setBuySellData(formatBuySellData(result).reverse())
     }
     const updateStockList = async () => {
       // const result = await fetchStockList()
@@ -234,11 +236,16 @@ const Row4 = (props: Props) => {
     }
     updateChartData()
   }, [symbol, filter])
-  console.log(chartData.length)
 
   return (
-    <>
-      <DashboardBox gridArea="a">
+    <ResponsiveGridLayout
+      className="layout"
+      layouts={layouts}
+      isResizable
+      breakpoints={{ lg: 1200, sm: 768, xs: 480, xxs: 0 }}
+      cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+    >
+      <DashboardBox key="a">
         <SearchBar
           handleChange={handleChange}
           setSymbol={setSymbol}
@@ -249,8 +256,8 @@ const Row4 = (props: Props) => {
           subtitle={`${stockData?.exchange}`}
           sideText={`${quote?.pc} ${stockData?.currency}`}
           change={quote?.d}
-          color={`${
-            quote?.d > "0" ? palette.primary[300] : palette.tertiary[600]
+          color={`${ quote.d &&
+            quote.d > 0 ? palette.primary[300] : palette.tertiary[600]
           }`}
           changePercent={`(${quote?.dp})%`}
         />
@@ -281,18 +288,6 @@ const Row4 = (props: Props) => {
                   stopOpacity={0}
                 />
               </linearGradient>
-              {/* <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor={palette.tertiary[500]}
-                  stopOpacity={0.5}
-                />
-                <stop
-                  offset="95%"
-                  stopColor={palette.tertiary[500]}
-                  stopOpacity={0}
-                />
-              </linearGradient> */}
             </defs>
             <XAxis
               dataKey="date"
@@ -315,130 +310,119 @@ const Row4 = (props: Props) => {
               fill="url(#colorRevenue)"
             />
             <Tooltip />
-            {/* <Area
-              type="monotone"
-              dataKey="expenses"
-              stroke={palette.tertiary[500]}
-              dot={true}
-              fillOpacity={1}
-              fill="url(#colorExpenses)"
-            /> */}
           </AreaChart>
         </ResponsiveContainer>
       </DashboardBox>
-      <Draggable>
-        <DashboardBox gridArea="e">
-          <BoxHeader
-            title="Latest Global News"
-            // sideText={`${transactionData?.length} products`}
+
+      <DashboardBox key="e">
+        <BoxHeader
+          title="Latest Global News"
+          sideText={`${news?.length}) Updates`}
+        />
+        <Box
+          mt=".5rem"
+          p="0 0 1rem"
+          height="95%"
+          sx={{
+            "& .super-app-theme--cell": {
+              color: palette.grey[300],
+              fontWeight: "600",
+            },
+            "& .MuiDataGrid-root": {
+              color: palette.grey[300],
+              border: "none",
+              fontWeight: "600",
+              fontSize: ".9rem",
+            },
+            "& .MuiDataGrid-columnHeaderTitle": {
+              color: palette.grey[500],
+              border: "none",
+              fontWeight: "600",
+              fontSize: ".9rem",
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: `none !important`,
+            },
+            "& .MuiDataGrid-columnHeaders": {
+              borderBottom: `1px solid ${palette.grey[800]}!important`,
+            },
+            "& .MuiDataGrid-columnSeparator": {
+              borderRight: `1px solid ${palette.grey[300]}!important`,
+            },
+          }}
+        >
+          <DataGrid
+            columnHeaderHeight={25}
+            rowHeight={30}
+            hideFooter={true}
+            rows={news || []}
+            columns={NewsColumns}
+            getRowId={(row) => row.id}
           />
-          {/* palette.primary[300] : palette.tertiary[600] */}
-          <Box
-            mt=".5rem"
-            p="0 0 1rem"
-            height="95%"
-            sx={{
-              "& .super-app-theme--cell": {
-                color: palette.grey[300],
-                fontWeight: "600",
-              },
-              "& .MuiDataGrid-root": {
-                color: palette.grey[300],
-                border: "none",
-                fontWeight: "600",
-                fontSize: ".9rem",
-              },
-              "& .MuiDataGrid-columnHeaderTitle": {
-                color: palette.grey[500],
-                border: "none",
-                fontWeight: "600",
-                fontSize: ".9rem",
-              },
-              "& .MuiDataGrid-cell": {
-                borderBottom: `none !important`,
-              },
-              "& .MuiDataGrid-columnHeaders": {
-                borderBottom: `1px solid ${palette.grey[800]}!important`,
-              },
-              "& .MuiDataGrid-columnSeparator": {
-                borderRight: `1px solid ${palette.grey[300]}!important`,
-              },
-            }}
-          >
-            <DataGrid
-              columnHeaderHeight={25}
-              rowHeight={30}
-              hideFooter={true}
-              rows={news || []}
-              columns={NewsColumns}
-              getRowId={(row) => row.id}
-            />
-          </Box>
-        </DashboardBox>
-      </Draggable>
-      <Draggable>
-        <DashboardBox gridArea="c">
-          <BoxHeader
-            title="Most Actively Traded"
-            sideText={`${news?.length} Results`}
+        </Box>
+      </DashboardBox>
+
+      <DashboardBox key="c">
+        <BoxHeader
+          title="Most Actively Traded"
+          sideText={`${news?.length} Results`}
+        />
+        <Box
+          mt=".5rem"
+          p="0 0 0.7rem"
+          height="95%"
+          sx={{
+            "& .super-app-theme--cell": {
+              color: palette.grey[300],
+              fontWeight: "600",
+              fontSize: ".88rem",
+            },
+            "& .super-app.negative": {
+              color: palette.tertiary[600],
+              fontWeight: "600",
+              fontSize: ".85rem",
+            },
+            "& .super-app.positive": {
+              color: palette.primary[300],
+              fontWeight: "600",
+              fontSize: ".85rem",
+            },
+            "& .MuiDataGrid-root": {
+              color: palette.grey[300],
+              border: "none",
+              fontWeight: "600",
+              fontSize: ".8rem",
+            },
+            "& .MuiDataGrid-columnHeaderTitle": {
+              color: palette.grey[500],
+              border: "none",
+              fontWeight: "600",
+              fontSize: ".85rem",
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: `1px solid ${palette.grey[800]}!important`,
+            },
+            "& .MuiDataGrid-columnHeaders": {
+              borderBottom: `1px solid ${palette.grey[800]}!important`,
+            },
+            "& .MuiDataGrid-columnSeparator": {
+              borderRight: `1px solid ${palette.grey[300]}!important`,
+            },
+          }}
+        >
+          <DataGrid
+            columnHeaderHeight={25}
+            rowHeight={55}
+            hideFooter={true}
+            rows={stockList || []}
+            columns={mostActiveColumns}
+            getRowId={(row) => row.volume}
           />
-          <Box
-            mt=".5rem"
-            p="0 0 0.7rem"
-            height="95%"
-            sx={{
-              "& .super-app-theme--cell": {
-                color: palette.grey[300],
-                fontWeight: "600",
-                fontSize: ".88rem",
-              },
-              "& .super-app.negative": {
-                color: palette.tertiary[600],
-                fontWeight: "600",
-                fontSize: ".85rem",
-              },
-              "& .super-app.positive": {
-                color: palette.primary[300],
-                fontWeight: "600",
-                fontSize: ".85rem",
-              },
-              "& .MuiDataGrid-root": {
-                color: palette.grey[300],
-                border: "none",
-                fontWeight: "600",
-                fontSize: ".8rem",
-              },
-              "& .MuiDataGrid-columnHeaderTitle": {
-                color: palette.grey[500],
-                border: "none",
-                fontWeight: "600",
-                fontSize: ".85rem",
-              },
-              "& .MuiDataGrid-cell": {
-                borderBottom: `1px solid ${palette.grey[800]}!important`,
-              },
-              "& .MuiDataGrid-columnHeaders": {
-                borderBottom: `1px solid ${palette.grey[800]}!important`,
-              },
-              "& .MuiDataGrid-columnSeparator": {
-                borderRight: `1px solid ${palette.grey[300]}!important`,
-              },
-            }}
-          >
-            <DataGrid
-              columnHeaderHeight={25}
-              rowHeight={55}
-              hideFooter={true}
-              rows={stockList || []}
-              columns={mostActiveColumns}
-              getRowId={(row) => row.volume}
-            />
-          </Box>
-        </DashboardBox>
-      </Draggable>
+        </Box>
+      </DashboardBox>
       {/* SPlIT HERE TO DIFF COMP  */}
 
-      <DashboardBox gridArea="b">
+      <DashboardBox gridArea="b" key="b">
         <BoxHeader
           title={`${stockData?.name} Daily Performance`}
           subtitle="Daily lows, highs, and value"
@@ -450,7 +434,7 @@ const Row4 = (props: Props) => {
             layout="vertical"
             width={500}
             height={400}
-            data={chartData?.slice(240, chartData.length -1)}
+            data={chartData?.slice(240, chartData.length - 1)}
             margin={{
               top: 20,
               right: 5,
@@ -473,33 +457,24 @@ const Row4 = (props: Props) => {
               // dot={false}
               style={{ fontSize: "10px" }}
             />
-            {/* <YAxis
-              yAxisId="right"
-              orientation="right"
-              axisLine={false}
-              tickLine={false}
-              style={{ fontSize: "10px" }}
-            /> */}
             <Tooltip />
             <Legend height={30} />
             <Line
-              // activeDot={{ r: 1 }}
               dot={false}
               type="monotone"
               dataKey="low"
-              stroke='#FF10F0'
-              // fillOpacity={1}
+              stroke="#FF10F0"
               fill="url(#colorRevenue)"
             />
-             <Line
-             dot={false}
+            <Line
+              dot={false}
               type="monotone"
               dataKey="high"
               fill="url(#colorExpenses)"
               stroke={palette.primary[300]}
             />
             <Line
-             dot={false}
+              dot={false}
               type="monotone"
               dataKey="value"
               fill="url(#colorExpenses)"
@@ -509,57 +484,52 @@ const Row4 = (props: Props) => {
         </ResponsiveContainer>
       </DashboardBox>
 
-      <Draggable>
-        <DashboardBox bgcolor="grey" gridArea="d">
-          <BoxHeader
-            title={`${stockData?.name || "Your"} Recommendation Trends`}
-            subtitle="Suggested investment strategies"
-            sideText=""
-            color={palette.tertiary[600]}
-          />
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              width={500}
-              height={300}
-              data={buySellData}
-              margin={{
-                top: 18,
-                right: 15,
-                left: -15,
-                bottom: 34,
-              }}
-            >
-              <defs>
-                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor={palette.primary[300]}
-                    stopOpacity={0.5}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor={palette.primary[300]}
-                    stopOpacity={0}
-                  />
-                </linearGradient>
-              </defs>
-              <CartesianGrid vertical={false} stroke={palette.grey[800]} />
-              <XAxis dataKey="period" axisLine={false} />
-              <YAxis />
-              <Legend height={20} wrapperStyle={{ margin: "0 0px 3px 30px" }} />
-              <Tooltip />
-              {/* <Bar yAxisId="left" dataKey="sell" fill="url(#colorRevenue)" /> */}
-              <Bar dataKey="sell" stackId="a" fill={palette.tertiary[600]} />
-              <Bar dataKey="hold" stackId="a" fill={palette.grey[300]} />
-              <Bar dataKey="buy" stackId="a" fill={palette.primary[300]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </DashboardBox>
-      </Draggable>
-    </>
+      <DashboardBox bgcolor="grey" gridArea="d" key="d">
+        <BoxHeader
+          title={`${stockData?.name || "Your"} Recommendation Trends`}
+          subtitle="Suggested investment strategies"
+          sideText=""
+          color={palette.tertiary[600]}
+        />
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            width={500}
+            height={300}
+            data={buySellData}
+            margin={{
+              top: 18,
+              right: 15,
+              left: -15,
+              bottom: 34,
+            }}
+          >
+            <defs>
+              <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor={palette.primary[300]}
+                  stopOpacity={0.5}
+                />
+                <stop
+                  offset="95%"
+                  stopColor={palette.primary[300]}
+                  stopOpacity={0}
+                />
+              </linearGradient>
+            </defs>
+            <CartesianGrid vertical={false} stroke={palette.grey[800]} />
+            <XAxis dataKey="period" axisLine={false} />
+            <YAxis />
+            <Legend height={20} wrapperStyle={{ margin: "0 0px 3px 30px" }} />
+            <Tooltip />
+            <Bar dataKey="sell" stackId="a" fill={palette.tertiary[600]} />
+            <Bar dataKey="hold" stackId="a" fill={palette.grey[300]} />
+            <Bar dataKey="buy" stackId="a" fill={palette.primary[300]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </DashboardBox>
+    </ResponsiveGridLayout>
   )
 }
 
 export default Row4
-
-

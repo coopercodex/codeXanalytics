@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material"
 import { red } from "@mui/material/colors"
 
 type Props = {
-  title: string
+  title: any;
   subtitle?: string
   sideText?: string
   color?: string
@@ -18,7 +18,7 @@ const BoxHeader = ({ icon, title, subtitle, sideText, color, change, changePerce
   const { palette } = useTheme()
 
   return (
-    <FlexBetween color={palette.grey[300]} margin=".25rem 1rem 0 1rem">
+    <FlexBetween color={palette.grey[300]} margin=".5rem 1rem 0 1rem">
       <FlexBetween>
         {icon}
         <Box width="100%">
