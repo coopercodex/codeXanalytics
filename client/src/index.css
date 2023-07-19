@@ -21,3 +21,14 @@ body,
 ::-webkit-scrollbar-thumb {
   background-color: rgb(61, 61, 67);
 }
+
+.react-grid-item > .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid rgba(242, 238, 238, 0.4);
+  border-bottom: 2px solid rgba(252, 248, 248, 0.4);
+}

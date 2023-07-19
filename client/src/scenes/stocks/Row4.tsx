@@ -154,7 +154,7 @@ const Row4 = (props: Props) => {
   const [news, setNews] = useState([])
 
   const formatData = (data) => {
-    return data.c.map((stock, idx) => {
+    return data?.c.map((stock, idx) => {
       return {
         value: stock.toFixed(2),
         date: unixTimestampToDate(data?.t[idx]),
@@ -164,7 +164,7 @@ const Row4 = (props: Props) => {
     })
   }
   const formatBuySellData = (data) => {
-    return data.map((stock, idx) => {
+    return data?.map((stock, idx) => {
       return {
         period: stock.period.split("-").reverse().join("/"),
         symbol: stock.symbol,
@@ -237,6 +237,7 @@ const Row4 = (props: Props) => {
     updateChartData()
   }, [symbol, filter])
 
+
   return (
     <ResponsiveGridLayout
       className="layout"
@@ -279,12 +280,12 @@ const Row4 = (props: Props) => {
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor={palette.primary[300]}
+                  stopColor={palette.tertiary[500]}
                   stopOpacity={0.5}
                 />
                 <stop
                   offset="95%"
-                  stopColor={palette.primary[300]}
+                  stopColor={palette.tertiary[500]}
                   stopOpacity={0}
                 />
               </linearGradient>
