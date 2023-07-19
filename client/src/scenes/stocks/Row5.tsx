@@ -83,16 +83,16 @@ const Row5 = (props: Props) => {
         </DashboardBox>
       </Draggable> */} 
 
-      <Draggable>
-        <Box bgcolor="grey" gridArea="e">
+      {/* <Draggable>
+        <Box bgcolor="grey" gridArea="b">
           e
         </Box>
-      </Draggable>
-      <Draggable>
+      </Draggable> */}
+      {/* <Draggable>
         <Box bgcolor="grey" gridArea="f">
           f
         </Box>
-      </Draggable>
+      </Draggable> */}
     </>
   )
 }

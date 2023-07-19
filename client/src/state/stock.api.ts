@@ -1,4 +1,5 @@
 const baseUrl = "https://finnhub.io/api/v1"
+const alphaUrl = "https://www.alphavantage.co"
 
 export const searchSymbols = async (query:string) => {
   const url = `${baseUrl}/search?q=${query}&token=${import.meta.env.VITE_SECRET_KEY}`  
@@ -55,8 +56,19 @@ export const fetchBuySellData = async (stockSymbol: string) => {
   return await res.json() 
 }
 
+export const fetchMarketNews = async () => {
+  const url = `${baseUrl}/news?category=forex&minId=10&token=${import.meta.env.VITE_SECRET_KEY}` 
+  const res = await fetch(url)
+  if (!res.ok) {
+    const message = `An error : ${res.status}`
+    throw new Error(message);
+    
+  }
+  return await res.json() 
+}
+
 export const fetchStockList = async () => {
-  const url =  `https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=${import.meta.env.VITE_STOCKLIST_KEY}`
+  const url =  `${alphaUrl}/query?function=TOP_GAINERS_LOSERS&apikey=${import.meta.env.VITE_STOCKLIST_KEY}`
   const res = await fetch(url)
   if (!res.ok) {
     const message = `An error : ${res.status}`
