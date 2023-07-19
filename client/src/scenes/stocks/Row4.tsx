@@ -33,7 +33,7 @@ import {
 import Draggable from "react-draggable"
 import { mockData } from "../../Mockdata"
 import clsx from "clsx"
-import { Link } from "react-router-dom"
+
 
 const mostActiveColumns: GridColDef[] = [
   {
@@ -133,7 +133,7 @@ const Row4 = (props: Props) => {
   const [stockData, setStockData] = useState({})
   const [searchData, setSearchData] = useState([])
   const [stockList, setStockList] = useState(mockData["most_actively_traded"])
-  const [symbol, setSymbol] = useState("FB")
+  const [symbol, setSymbol] = useState("META")
   const [quote, setQuote] = useState({})
   const [filter, setFilter] = useState("1W")
   const [chartData, setChartData] = useState([])
@@ -164,10 +164,12 @@ const Row4 = (props: Props) => {
     "1Y": { days: 0, weeks: 0, months: 0, years: 1, resolution: "D" },
   }
   const formatData = (data) => {
-    return data?.c.map((stock, idx) => {
+    return data.c.map((stock, idx) => {
       return {
-        value: stock?.toFixed(2),
+        value: stock.toFixed(2),
         date: unixTimestampToDate(data?.t[idx]),
+        low: data?.l[idx].toFixed(2),
+        high: data?.h[idx].toFixed(2),
       }
     })
   }
@@ -187,10 +189,6 @@ const Row4 = (props: Props) => {
     }
     const updateStockOverview = async () => {
       const result = await fetchQuote(symbol)
-      console.log(
-        "🚀 ~ file: Row4.tsx:182 ~ updateStockOverview ~ result:",
-        result
-      )
       setQuote(result)
     }
     const updateBuySellData = async () => {
@@ -236,7 +234,7 @@ const Row4 = (props: Props) => {
     }
     updateChartData()
   }, [symbol, filter])
-  console.log("CDATA", chartData)
+  console.log(chartData.length)
 
   return (
     <>
@@ -382,9 +380,8 @@ const Row4 = (props: Props) => {
         <DashboardBox gridArea="c">
           <BoxHeader
             title="Most Actively Traded"
-            // sideText={`${transactionData?.length} products`}
+            sideText={`${news?.length} Results`}
           />
-          {/* palette.primary[300] : palette.tertiary[600] */}
           <Box
             mt=".5rem"
             p="0 0 0.7rem"
@@ -441,10 +438,10 @@ const Row4 = (props: Props) => {
       </Draggable>
       {/* SPlIT HERE TO DIFF COMP  */}
 
-      <DashboardBox bgcolor="grey" gridArea="b">
+      <DashboardBox gridArea="b">
         <BoxHeader
-          title="Profit and Revenue"
-          subtitle="Top line profit, bottom line revenue"
+          title={`${stockData?.name} Daily Performance`}
+          subtitle="Daily lows, highs, and value"
           // sideText={`${profitMargin}%`}
           color={palette.grey[300]}
         />
@@ -453,7 +450,7 @@ const Row4 = (props: Props) => {
             layout="vertical"
             width={500}
             height={400}
-            data={chartData}
+            data={chartData?.slice(240, chartData.length -1)}
             margin={{
               top: 20,
               right: 5,
@@ -461,11 +458,11 @@ const Row4 = (props: Props) => {
               bottom: 25,
             }}
           >
-            <CartesianGrid stroke={palette.grey[800]} />
+            <CartesianGrid stroke={palette.grey[900]} />
             <XAxis
-              dataKey="value"
+              type="number"
               tickLine={false}
-              domain={[0, "dataMax"]}
+              domain={["dataMin", "dataMax"]}
               style={{ fontSize: "10px" }}
             />
             <YAxis
@@ -473,6 +470,7 @@ const Row4 = (props: Props) => {
               type="category"
               axisLine={false}
               tickLine={false}
+              // dot={false}
               style={{ fontSize: "10px" }}
             />
             {/* <YAxis
@@ -485,14 +483,23 @@ const Row4 = (props: Props) => {
             <Tooltip />
             <Legend height={30} />
             <Line
-              // activeDot={{ r: 6 }}
+              // activeDot={{ r: 1 }}
+              dot={false}
               type="monotone"
-              dataKey="date"
-              stroke={palette.primary[300]}
+              dataKey="low"
+              stroke='#FF10F0'
               // fillOpacity={1}
               fill="url(#colorRevenue)"
             />
+             <Line
+             dot={false}
+              type="monotone"
+              dataKey="high"
+              fill="url(#colorExpenses)"
+              stroke={palette.primary[300]}
+            />
             <Line
+             dot={false}
               type="monotone"
               dataKey="value"
               fill="url(#colorExpenses)"
@@ -554,3 +561,5 @@ const Row4 = (props: Props) => {
 }
 
 export default Row4
+
+
