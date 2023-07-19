@@ -35,13 +35,8 @@ import GridLayout from "react-grid-layout"
 import "react-grid-layout/css/styles.css"
 import "react-resizable/css/styles.css"
 import { Responsive, WidthProvider } from "react-grid-layout"
-import {
-  chartConfig,
-  createDate,
-  dateToUnixTimestamp,
-  unixTimestampToDate,
-} from "../../state/Time"
 import { layouts } from "../../state/layoutsAndGrid"
+import { chartConfig, createDate, dateToUnixTimestamp, unixTimestampToDate } from "../../time"
 const ResponsiveGridLayout = WidthProvider(Responsive)
 
 const mostActiveColumns: GridColDef[] = [
