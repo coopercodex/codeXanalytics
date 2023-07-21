@@ -2,15 +2,14 @@ const baseUrl = "https://finnhub.io/api/v1"
 const alphaUrl = "https://www.alphavantage.co"
 
 export const searchSymbols = async (query:string) => {
-  const url = `${baseUrl}/search?q=${query}&token=${import.meta.env.VITE_SECRET_KEY}`  
-  const res = await fetch(url)
+  const res = await fetch(`${baseUrl}/search?q=${query}&token=${import.meta.env.VITE_SECRET_KEY}`)
   if (!res.ok) {
     const message = `An error : ${res.status}`
     throw new Error(message);
-    
   }
-  return await res.json()
+  return res.json()
 }
+
 
 export const fetchStockDetails = async (stockSymbol:string) => {
     const url = `${baseUrl}/stock/profile2?symbol=${stockSymbol}&token=${import.meta.env.VITE_SECRET_KEY}` 
@@ -20,7 +19,7 @@ export const fetchStockDetails = async (stockSymbol:string) => {
       throw new Error(message);
       
     }
-    return await res.json() 
+    return res.json() 
 }
 
 export const fetchQuote = async (stockSymbol:string) => {
@@ -31,7 +30,7 @@ export const fetchQuote = async (stockSymbol:string) => {
     throw new Error(message);
     
   }
-  return await res.json() 
+  return res.json() 
 }
 
 export const fetchHistoricalData = async (stockSymbol: string,resolution: string, from: number, to: number) => {
@@ -42,7 +41,7 @@ export const fetchHistoricalData = async (stockSymbol: string,resolution: string
     throw new Error(message);
     
   }
-  return await res.json() 
+  return res.json() 
 }
 
 export const fetchBuySellData = async (stockSymbol: string) => {
@@ -53,7 +52,7 @@ export const fetchBuySellData = async (stockSymbol: string) => {
     throw new Error(message);
     
   }
-  return await res.json() 
+  return res.json() 
 }
 
 export const fetchMarketNews = async () => {
@@ -64,7 +63,7 @@ export const fetchMarketNews = async () => {
     throw new Error(message);
     
   }
-  return await res.json() 
+  return res.json() 
 }
 
 export const fetchStockList = async () => {
@@ -75,5 +74,5 @@ export const fetchStockList = async () => {
     throw new Error(message);
     
   }
-  return await res.json() 
+  return res.json() 
 }

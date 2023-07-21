@@ -144,7 +144,8 @@ const Row4 = (props: Props) => {
   const { palette: palette } = useTheme()
   const [stockData, setStockData] = useState<StockData>({})
   const [searchData, setSearchData] = useState([])
-  const [stockList, setStockList] = useState(mockData["most_actively_traded"])
+  const [stockList, setStockList] = useState([])
+  console.log("🚀 ~ file: Row4.tsx:148 ~ Row4 ~ stockList:", stockList)
   const [symbol, setSymbol] = useState("META")
   const [quote, setQuote] = useState<Quotes>({})
   const [filter] = useState("1W")
@@ -179,60 +180,65 @@ const Row4 = (props: Props) => {
     event.preventDefault()
     setSymbol(event.target.value)
     const searchResults = await searchSymbols(event.target.value)
-    const result = searchResults.result
-    setSearchData(result)
+    // const result = searchResults
+    setSearchData(searchResults.result)
   }
+  
 
+  const updateStockDetails = async () => {
+    const result = await fetchStockDetails(symbol)
+    setStockData(result)
+  }
+  const updateStockOverview = async () => {
+    const result = await fetchQuote(symbol)
+    setQuote(result)
+  }
+  const updateBuySellData = async () => {
+    const result = await fetchBuySellData(symbol)
+    setBuySellData(formatBuySellData(result).reverse())
+  }
+  const updateStockList = async () => {
+    const result = await fetchStockList()
+    setStockList(result["most_actively_traded"])
+  }
+  const updateMarketNews = async () => {
+    const result = await fetchMarketNews()
+    setNews(result)
+  }
+  
+  const getDateRange = () => {
+    const { days, weeks, months, years } = chartConfig[filter]
+
+    const endDate = new Date()
+    const startDate = createDate(endDate, -days, -weeks, -months, -years)
+
+    const startTimeStampUnix = dateToUnixTimestamp(startDate)
+    const endTimeStampUnix = dateToUnixTimestamp(endDate)
+    return { startTimeStampUnix, endTimeStampUnix }
+  }
+  const updateChartData = async () => {
+    const { startTimeStampUnix, endTimeStampUnix } = getDateRange()
+    const resolution = chartConfig[filter].resolution
+    const result = await fetchHistoricalData(
+      symbol,
+      resolution,
+      startTimeStampUnix,
+      endTimeStampUnix
+    )
+    setChartData(formatData(result))
+  }
   useEffect(() => {
-    const updateStockDetails = async () => {
-      const result = await fetchStockDetails(symbol)
-      setStockData(result)
-    }
-    const updateStockOverview = async () => {
-      const result = await fetchQuote(symbol)
-      setQuote(result)
-    }
-    const updateBuySellData = async () => {
-      const result = await fetchBuySellData(symbol)
-      setBuySellData(formatBuySellData(result).reverse())
-    }
-    const updateStockList = async () => {
-      // const result = await fetchStockList()
-      // setStockList(mockData)
-    }
-    const updateMarketNews = async () => {
-      const result = await fetchMarketNews()
-      setNews(result)
-    }
     updateStockDetails()
     updateStockOverview()
     updateBuySellData()
-    updateStockList()
-    updateMarketNews()
   }, [symbol])
 
   useEffect(() => {
-    const getDateRange = () => {
-      const { days, weeks, months, years } = chartConfig[filter]
-
-      const endDate = new Date()
-      const startDate = createDate(endDate, -days, -weeks, -months, -years)
-
-      const startTimeStampUnix = dateToUnixTimestamp(startDate)
-      const endTimeStampUnix = dateToUnixTimestamp(endDate)
-      return { startTimeStampUnix, endTimeStampUnix }
-    }
-    const updateChartData = async () => {
-      const { startTimeStampUnix, endTimeStampUnix } = getDateRange()
-      const resolution = chartConfig[filter].resolution
-      const result = await fetchHistoricalData(
-        symbol,
-        resolution,
-        startTimeStampUnix,
-        endTimeStampUnix
-      )
-      setChartData(formatData(result))
-    }
+    updateStockList()
+    updateMarketNews()
+  }, [])
+  
+  useEffect(() => {
     updateChartData()
   }, [symbol, filter])
 
@@ -365,7 +371,7 @@ const Row4 = (props: Props) => {
       <DashboardBox key="c">
         <BoxHeader
           title="Most Actively Traded"
-          sideText={`${news?.length} Results`}
+          sideText={`${stockList?.length} Results`}
         />
         <Box
           mt=".5rem"
