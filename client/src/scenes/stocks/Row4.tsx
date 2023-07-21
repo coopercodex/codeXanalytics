@@ -31,7 +31,6 @@ import {
 } from "../../state/stock.api"
 import { mockData } from "../../Mockdata"
 import clsx from "clsx"
-import GridLayout from "react-grid-layout"
 import "react-grid-layout/css/styles.css"
 import "react-resizable/css/styles.css"
 import { Responsive, WidthProvider } from "react-grid-layout"
